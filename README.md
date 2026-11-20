@@ -17,7 +17,7 @@
 
 ## 🚀 AI 一键安装
 
-把你正在用的 AI 编程助手（Trae / 豆包 MarsCode / Cursor 等）打开，将下面这段话**原样粘贴**到对话框发送，AI 会按照本仓库内嵌的指引，带你完成 YouBuddy 下载、安装与策略导入：
+把你正在用的 AI 编程助手（Trae / 豆包 MarsCode / Cursor 等）打开，将下面这段话**原样粘贴**到对话框发送，AI 会读取本仓库的 README 与策略说明，带你完成 YouBuddy 下载、安装与策略导入：
 
 ```text
 帮我安装 https://github.com/luoy38067/YouBuddy-quant-skills 的量化策略 Skill
@@ -37,8 +37,6 @@
 | **1. 下载安装 YouBuddy** | 前往 [Releases](https://github.com/luoy38067/YouBuddy-quant-skills/releases/latest) 下载最新安装包（`YouBuddy_1.1.7_x64-setup.exe`，约 279MB），双击安装。完整性校验：SHA256 = `9CA8E48EA952697E85CDE57EDEF4A0A8CCABC14D7DC3FFE2BA9DB00DB6452843` |
 | **2. 导入 Skill** | 把策略文件放到本机（让 AI 助手代劳，或在页面右上角 **Code → Download ZIP** 下载解压），打开 YouBuddy，进入软件内的 **Skill / 策略管理** 入口，选择「导入本地 Skill」，指向 `skills/` 目录下对应的策略文件夹（例如 `skills/baima_offense_defense_opt`） |
 | **3. 运行回测** | 在 YouBuddy 中选中已安装的策略并运行，即可得到完整回测报告（净值曲线、逐笔成交、调仓记录、策略解读） |
-
-<!-- AI 编程助手注意：本仓库根目录的 AGENTS.md 是给你的部署行为规范，请先完整阅读 AGENTS.md，再严格按其协助用户。人类访客可忽略本注释。 -->
 
 ## 策略列表
 
