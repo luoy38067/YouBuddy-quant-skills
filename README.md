@@ -30,12 +30,30 @@
 - **Windows 10/11 x64**（YouBuddy 目前仅支持 Windows 桌面端）；
 - 请在**本机**完成安装与运行：云端沙盒 / 虚拟机（包括 AI 助手的云开发环境）中没有 YouBuddy 宿主环境，Skill 只能下载查看，**无法执行回测**。
 
+## 运行环境
+
+YouBuddy 的完整运行环境由三部分组成，建议按顺序安装。国内网络访问 GitHub 较慢时，可使用镜像通道：
+
+| 顺序 | 安装包 | 用途 | 下载地址 |
+|---|---|---|---|
+| 1 | `vc_redist.x64.exe` | 微软 Visual C++ 运行库 | [GitHub](https://github.com/luoy38067/YouBuddy-quant-skills/releases/download/v1.0.0/vc_redist.x64.exe)，慢时在链接前加 `https://ghfast.top/` |
+| 2 | `Miniconda3-py312_26.9.4-1-Windows-x86_64.exe` | Python 3.12 运行环境 | [清华 TUNA 镜像](https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py312_26.9.4-1-Windows-x86_64.exe) |
+| 3 | `YouBuddy_1.1.7_x64-setup.exe` | YouBuddy 客户端 | [GitHub](https://github.com/luoy38067/YouBuddy-quant-skills/releases/download/v1.0.0/YouBuddy_1.1.7_x64-setup.exe)，慢时在链接前加 `https://ghfast.top/` |
+
+> 经第三方加速通道下载的安装包，安装前建议核对文件完整性（SHA256）：
+
+| 安装包 | SHA256 |
+|---|---|
+| `YouBuddy_1.1.7_x64-setup.exe` | `9CA8E48EA952697E85CDE57EDEF4A0A8CCABC14D7DC3FFE2BA9DB00DB6452843` |
+| `Miniconda3-py312_26.9.4-1-Windows-x86_64.exe` | `7FB37E3049EDCF3524AE4735B54D04917353F35B3190CB0C9CCB789729934BD4` |
+| `vc_redist.x64.exe` | `CC0FF0EB1DC3F5188AE6300FAEF32BF5BEEBA4BDD6E8E445A9184072096B713B` |
+
 ## 快速开始
 
 | 步骤 | 操作 |
 |---|---|
 | **1. 下载安装 YouBuddy** | 前往 [Releases](https://github.com/luoy38067/YouBuddy-quant-skills/releases/latest) 下载最新安装包（`YouBuddy_1.1.7_x64-setup.exe`，约 279MB），双击安装。完整性校验：SHA256 = `9CA8E48EA952697E85CDE57EDEF4A0A8CCABC14D7DC3FFE2BA9DB00DB6452843` |
-| **2. 导入 Skill** | 把策略文件放到本机（让 AI 助手代劳，或在页面右上角 **Code → Download ZIP** 下载解压），打开 YouBuddy，进入软件内的 **Skill / 策略管理** 入口，选择「导入本地 Skill」，指向 `skills/` 目录下对应的策略文件夹（例如 `skills/baima_offense_defense_opt`） |
+| **2. 导入 Skill** | 把策略文件放到本机（让 AI 助手代劳，或在页面右上角 **Code → Download ZIP** 下载解压），打开 YouBuddy，进入软件内的 **Skill / 策略管理** 入口，选择「导入本地 Skill」，指向 `skills/` 目录下对应的策略文件夹（例如 `skills/baima_offense_defense_opt`）；也可把各策略文件夹直接复制到 YouBuddy 的 Skill 目录 `C:\Users\<用户名>\AppData\Roaming\com.youbuddy.app\skills\`，重新打开软件在列表中确认已识别 |
 | **3. 运行回测** | 在 YouBuddy 中选中已安装的策略并运行，即可得到完整回测报告（净值曲线、逐笔成交、调仓记录、策略解读） |
 
 ## 策略列表
