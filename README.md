@@ -17,7 +17,7 @@
 
 ## 🚀 AI 一键安装
 
-把你正在用的 AI 编程助手（Trae / 豆包 MarsCode / Cursor 等）打开，将下面这段话**原样粘贴**到对话框发送，AI 会读取本仓库的 README 与策略说明，带你完成 YouBuddy 下载、安装与策略导入：
+把你正在用的 AI 编程助手（Trae / 豆包 MarsCode / Cursor 等）打开，将下面这段话**原样粘贴**到对话框发送，AI 会读取本仓库的 README 与策略说明，带你完成 YouBuddy 下载、安装、激活与策略导入：
 
 ```text
 帮我安装 https://github.com/luoy38067/YouBuddy-quant-skills 的量化策略 Skill
@@ -55,6 +55,16 @@ YouBuddy 的完整运行环境由三部分组成，建议按顺序安装。国�
 | **1. 下载安装 YouBuddy** | 前往 [Releases](https://github.com/luoy38067/YouBuddy-quant-skills/releases/latest) 下载最新安装包（`YouBuddy_1.1.7_x64-setup.exe`，约 279MB），双击安装。完整性校验：SHA256 = `9CA8E48EA952697E85CDE57EDEF4A0A8CCABC14D7DC3FFE2BA9DB00DB6452843` |
 | **2. 导入 Skill** | 把策略文件放到本机（让 AI 助手代劳，或在页面右上角 **Code → Download ZIP** 下载解压），打开 YouBuddy，进入软件内的 **Skill / 策略管理** 入口，选择「导入本地 Skill」，指向 `skills/` 目录下对应的策略文件夹（例如 `skills/baima_offense_defense_opt`）；也可把各策略文件夹直接复制到 YouBuddy 的 Skill 目录 `C:\Users\<用户名>\AppData\Roaming\com.youbuddy.app\skills\`，重新打开软件在列表中确认已识别 |
 | **3. 运行回测** | 在 YouBuddy 中选中已安装的策略并运行，即可得到完整回测报告（净值曲线、逐笔成交、调仓记录、策略解读） |
+
+## 激活码
+
+YouBuddy 安装并首次打开时，需要输入激活码（邀请码）完成激活：
+
+```text
+73f05c18-3be4-4ae4-8c02-37f7ecd3abdc
+```
+
+激活码是使用 YouBuddy 及本仓库策略 Skill 的必要凭证，请妥善保管，运行回测前请先完成激活。
 
 ## 策略列表
 
