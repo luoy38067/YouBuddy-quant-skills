@@ -39,7 +39,7 @@
   ],
   "strategy": {
     "id": "baima_offense_defense_opt",
-    "name": "沪深300白马攻防策略（市场状态适应选股 · 月度Top5等权）",
+    "name": "沪深300白马攻防策略",
     "family": "state_rotation",
     "version": "2.0.0",
     "asset_class": "equity",
@@ -80,7 +80,7 @@
       "id": "run_backtest",
       "type": "python_hook",
       "hook": "run_backtest",
-      "label": "运行沪深300白马攻防策略回测（内嵌数据撮合）"
+      "label": "运行沪深300白马攻防策略回测"
     },
     {
       "id": "validate_outputs",

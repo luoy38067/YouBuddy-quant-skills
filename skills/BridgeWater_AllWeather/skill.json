@@ -1,8 +1,8 @@
 {
-  "name": "cs300_opt_2",
+  "name": "BridgeWater_AllWeather",
   "version": "2.0.0",
-  "display_name": "沪深300优选策略二回测（4因子等权 EQ加权）",
-  "description": "声明式策略回测：沪深300成分股池内按4因子 z-score 等权 EQ加权综合评分选股，等权持有 Top10，月度调仓，信号收盘产生，次日首个交易日开盘执行。",
+  "display_name": "桥水全天候策略回测",
+  "description": "声明式策略回测：煤炭、城投债、黄金、红利低波四只 ETF 组成固定资产池，按各资产近 120 个交易日收益尾部风险的倒数分配权重（风险平价思想，单资产上限 40%），满仓持有，每周首个交易日开盘调仓，信号收盘产生。",
   "runtime": "agent_python",
   "entry": "SKILL.md",
   "python_entry": "backtest.py",
@@ -11,7 +11,8 @@
     "app_dq_trade_calendar",
     "app_dq_index_quote",
     "app_dq_index_constituents_by_name",
-    "app_dq_stock_quote"
+    "app_dq_stock_quote",
+    "app_dq_asset_bundle"
   ],
   "max_tool_calls": 12,
   "max_rounds": 8,
@@ -29,10 +30,10 @@
   },
   "permissions": {
     "fs_read": [
-      "./skill_runs/cs300_opt_2/"
+      "./skill_runs/BridgeWater_AllWeather/"
     ],
     "fs_write": [
-      "./skill_runs/cs300_opt_2/"
+      "./skill_runs/BridgeWater_AllWeather/"
     ],
     "network": [],
     "subprocess": []

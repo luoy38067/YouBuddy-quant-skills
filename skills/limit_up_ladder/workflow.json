@@ -1,0 +1,616 @@
+{
+  "version": 1,
+  "variables": [
+    {
+      "kind": "input_date",
+      "name": "as_of",
+      "default": "today"
+    },
+    {
+      "kind": "date_offset",
+      "name": "win_s",
+      "from": "as_of",
+      "days": -30
+    },
+    {
+      "kind": "date_offset",
+      "name": "stats_s",
+      "from": "as_of",
+      "days": -7
+    },
+    {
+      "kind": "date_offset",
+      "name": "mf_s",
+      "from": "as_of",
+      "days": -4
+    },
+    {
+      "kind": "date_offset",
+      "name": "q1_s",
+      "from": "as_of",
+      "days": -4
+    },
+    {
+      "kind": "date_offset",
+      "name": "q2_s",
+      "from": "as_of",
+      "days": -9
+    },
+    {
+      "kind": "date_offset",
+      "name": "q2_e",
+      "from": "as_of",
+      "days": -5
+    },
+    {
+      "kind": "date_offset",
+      "name": "q3_s",
+      "from": "as_of",
+      "days": -14
+    },
+    {
+      "kind": "date_offset",
+      "name": "q3_e",
+      "from": "as_of",
+      "days": -10
+    },
+    {
+      "kind": "date_offset",
+      "name": "q4_s",
+      "from": "as_of",
+      "days": -19
+    },
+    {
+      "kind": "date_offset",
+      "name": "q4_e",
+      "from": "as_of",
+      "days": -15
+    },
+    {
+      "kind": "date_offset",
+      "name": "q5_s",
+      "from": "as_of",
+      "days": -24
+    },
+    {
+      "kind": "date_offset",
+      "name": "q5_e",
+      "from": "as_of",
+      "days": -20
+    },
+    {
+      "kind": "date_offset",
+      "name": "q6_s",
+      "from": "as_of",
+      "days": -29
+    },
+    {
+      "kind": "date_offset",
+      "name": "q6_e",
+      "from": "as_of",
+      "days": -25
+    },
+    {
+      "kind": "literal",
+      "name": "min_board",
+      "value": 2
+    }
+  ],
+  "steps": [
+    {
+      "id": "cons_std",
+      "type": "builtin",
+      "tool": "app_dq_index_constituents_by_name",
+      "label": "[v0.3.5] 1/15 取创业板成分（宿主编排前置步骤，compute 不消费）",
+      "args": [
+        {
+          "index_name": "创业板",
+          "date": "${as_of}"
+        }
+      ]
+    },
+    {
+      "id": "limit_ind_up_export",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 2/15 导出涨停明细（LIMIT_TYPE=01，30 自然日窗口整表 ≈20 交易日，连板计数本地做）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_limit_ind",
+          "cond": {
+            "LIMIT_TYPE": [
+              "01"
+            ]
+          },
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${win_s}",
+              "$lte": "${as_of}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "LIMIT_TYPE",
+            "LIMIT_PRICE",
+            "FIRST_LIMIT_TIME",
+            "LIMIT_VALUE_CLOSE",
+            "LIMIT_VALUE_MAX"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_limit_ind.csv"
+      ]
+    },
+    {
+      "id": "limit_ind_down_export",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 3/15 导出跌停明细（LIMIT_TYPE=02，同窗口；空结果降级为数据不足）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_limit_ind",
+          "cond": {
+            "LIMIT_TYPE": [
+              "02"
+            ]
+          },
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${win_s}",
+              "$lte": "${as_of}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "LIMIT_TYPE",
+            "LIMIT_PRICE",
+            "LIMIT_VALUE_CLOSE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 8000,
+          "max_rows": 8000
+        },
+        "csv",
+        ".data/${run_id}_limit_ind_down.csv"
+      ]
+    },
+    {
+      "id": "quotes_p1",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 4/15 行情切片 1/6（as_of-4..as_of，全市场 30 自然日 ≈11.3 万行必须切片，单片 <24000）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q1_s}",
+              "$lte": "${as_of}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p1.csv"
+      ]
+    },
+    {
+      "id": "quotes_p2",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 5/15 行情切片 2/6（as_of-9..as_of-5）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q2_s}",
+              "$lte": "${q2_e}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p2.csv"
+      ]
+    },
+    {
+      "id": "quotes_p3",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 6/15 行情切片 3/6（as_of-14..as_of-10）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q3_s}",
+              "$lte": "${q3_e}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p3.csv"
+      ]
+    },
+    {
+      "id": "quotes_p4",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 7/15 行情切片 4/6（as_of-19..as_of-15）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q4_s}",
+              "$lte": "${q4_e}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p4.csv"
+      ]
+    },
+    {
+      "id": "quotes_p5",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 8/15 行情切片 5/6（as_of-24..as_of-20）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q5_s}",
+              "$lte": "${q5_e}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p5.csv"
+      ]
+    },
+    {
+      "id": "quotes_p6",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 9/15 行情切片 6/6（as_of-29..as_of-25）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equd",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${q6_s}",
+              "$lte": "${q6_e}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "CLOSE_PRICE",
+            "ACT_PRE_CLOSE_PRICE",
+            "CHG_PCT",
+            "TURNOVER_VALUE",
+            "TURNOVER_RATE",
+            "NEG_MARKET_VALUE"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_equd_quotes_p6.csv"
+      ]
+    },
+    {
+      "id": "mf_day_export",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 10/15 导出资金流（近4自然日窗口 ≈2万行，compute 取复盘日行）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_equ_mf_new",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${mf_s}",
+              "$lte": "${as_of}"
+            }
+          },
+          "cols": [
+            "TICKER_SYMBOL",
+            "TRADE_DATE",
+            "MAIN_FLOW"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_mf_day.csv"
+      ]
+    },
+    {
+      "id": "stats_export",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 11/15 导出全市场封板情绪（mkt_limit_stats 近 7 自然日窗口，compute 取复盘日行）",
+      "args": [
+        {
+          "database": "tl_stock_quote",
+          "table_name": "mkt_limit_stats",
+          "cond_range": {
+            "TRADE_DATE": {
+              "$gte": "${stats_s}",
+              "$lte": "${as_of}"
+            }
+          },
+          "cols": [
+            "TRADE_DATE",
+            "UP_NUM",
+            "SUC_RATIO",
+            "CON_RATIO",
+            "FAIL_RATIO"
+          ],
+          "order_by": "TRADE_DATE",
+          "order_method": "desc",
+          "offset": 0,
+          "limit": 100,
+          "max_rows": 100
+        },
+        "csv",
+        ".data/${run_id}_limit_stats.csv"
+      ]
+    },
+    {
+      "id": "md_security_p1",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 12/15 证券主档补充源 1/2（offset 0；名称主源为申万行业成员快照，本表为 best-effort 补充）",
+      "args": [
+        {
+          "database": "tl_main",
+          "table_name": "md_security",
+          "cols": [
+            "TICKER_SYMBOL",
+            "SEC_SHORT_NAME"
+          ],
+          "offset": 0,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_md_security_p1.csv"
+      ]
+    },
+    {
+      "id": "md_security_p2",
+      "type": "builtin",
+      "tool": "app_dq_export",
+      "label": "[v0.3.5] 13/15 证券主档补充源 2/2（offset 24000；越界返回空行为正常，不视为失败）",
+      "args": [
+        {
+          "database": "tl_main",
+          "table_name": "md_security",
+          "cols": [
+            "TICKER_SYMBOL",
+            "SEC_SHORT_NAME"
+          ],
+          "offset": 24000,
+          "limit": 24000,
+          "max_rows": 24000
+        },
+        "csv",
+        ".data/${run_id}_md_security_p2.csv"
+      ]
+    },
+    {
+      "id": "industry_members",
+      "type": "foreach_builtin",
+      "tool": "app_dq_industry_members",
+      "label": "[v0.3.5] 14/15 按31个申万一级行业代码逐行业取成员（行业映射 + 名称主源，as_of 口径快照）",
+      "items": [
+        {
+          "sw_code": "801010"
+        },
+        {
+          "sw_code": "801030"
+        },
+        {
+          "sw_code": "801040"
+        },
+        {
+          "sw_code": "801050"
+        },
+        {
+          "sw_code": "801080"
+        },
+        {
+          "sw_code": "801110"
+        },
+        {
+          "sw_code": "801120"
+        },
+        {
+          "sw_code": "801130"
+        },
+        {
+          "sw_code": "801140"
+        },
+        {
+          "sw_code": "801150"
+        },
+        {
+          "sw_code": "801160"
+        },
+        {
+          "sw_code": "801170"
+        },
+        {
+          "sw_code": "801180"
+        },
+        {
+          "sw_code": "801200"
+        },
+        {
+          "sw_code": "801210"
+        },
+        {
+          "sw_code": "801230"
+        },
+        {
+          "sw_code": "801710"
+        },
+        {
+          "sw_code": "801720"
+        },
+        {
+          "sw_code": "801730"
+        },
+        {
+          "sw_code": "801740"
+        },
+        {
+          "sw_code": "801750"
+        },
+        {
+          "sw_code": "801760"
+        },
+        {
+          "sw_code": "801770"
+        },
+        {
+          "sw_code": "801780"
+        },
+        {
+          "sw_code": "801790"
+        },
+        {
+          "sw_code": "801880"
+        },
+        {
+          "sw_code": "801890"
+        },
+        {
+          "sw_code": "801950"
+        },
+        {
+          "sw_code": "801960"
+        },
+        {
+          "sw_code": "801970"
+        },
+        {
+          "sw_code": "801980"
+        }
+      ],
+      "args": [
+        {
+          "sw_code": "${item.sw_code}",
+          "date": "${as_of}"
+        }
+      ]
+    },
+    {
+      "id": "compute",
+      "type": "python_hook",
+      "hook": "compute_limit_ladder",
+      "label": "[v0.3.5] 15/15 执行连板天梯聚合计算（收盘封板判定/ST·北交所过滤/连板计数/20日新高/封单强度/行业聚合/readings 读数）"
+    }
+  ]
+}

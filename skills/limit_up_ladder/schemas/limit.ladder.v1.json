@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "limit.ladder.v1",
+  "title": "连板天梯（复盘）聚合结果",
+  "type": "object",
+  "required": ["ok", "contract", "gaps"],
+  "properties": {
+    "ok": {"type": "boolean"},
+    "contract": {"const": "limit.ladder.v1"},
+    "as_of": {"type": ["string", "null"], "description": "实际复盘日（窗口内涨停明细最新 TRADE_DATE）"},
+    "requested_date": {"type": ["string", "null"], "description": "用户请求日；晚于 as_of 时公告滞后"},
+    "min_board": {"type": ["integer", "null"], "description": "入梯最低连板数（默认 2）"},
+    "sentiment": {
+      "type": ["object", "null"],
+      "properties": {
+        "limit_up_count": {"type": ["integer", "null"], "description": "mkt_limit_stats.UP_NUM（全市场口径）"},
+        "pool_size_all": {"type": ["integer"], "description": "收盘封住家数（未剔 ST/北交所）"},
+        "pool_size": {"type": ["integer"], "description": "涨停池家数（剔 ST/北交所后）"},
+        "limit_down_count": {"type": ["integer", "null"], "description": "收盘跌停家数（LIMIT_TYPE='02' 封住）"},
+        "suc_ratio": {"type": ["number", "null"], "description": "封板率 SUC_RATIO"},
+        "con_ratio": {"type": ["number", "null"], "description": "连板率 CON_RATIO"},
+        "fail_ratio": {"type": ["number", "null"], "description": "炸板率 FAIL_RATIO"},
+        "bombed_count": {"type": ["integer"], "description": "复盘日触及未封（炸板）家数（01 且收盘封单空）"}
+      }
+    },
+    "structure": {
+      "type": ["object", "null"],
+      "properties": {
+        "total_count": {"type": "integer", "description": "入梯总家数（未截断前）"},
+        "max_board": {"type": "integer", "description": "最高连板数"},
+        "high_count": {"type": "integer", "description": "空间/高标（≥5 板）家数"},
+        "mid_count": {"type": "integer", "description": "高度板（3–4 板）家数"},
+        "low_count": {"type": "integer", "description": "中位（2 板）家数"}
+      }
+    },
+    "ladder": {
+      "type": "array",
+      "description": "连板梯队（连板降序、组内收盘封单额降序，≤20 只）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "board": {"type": "integer", "description": "连板数（从 D 向前连续收盘封板天数，含 D）"},
+          "ticker": {"type": "string"},
+          "name": {"type": ["string", "null"]},
+          "industry": {"type": ["string", "null"]},
+          "close_price": {"type": ["number", "null"]},
+          "chg_pct": {"type": ["number", "null"], "description": "小数比率"},
+          "first_limit_time": {"type": ["string", "null"], "description": "首次封板时间（原始字符串）"},
+          "limit_value_close": {"type": ["number", "null"], "description": "收盘封单额（元）"},
+          "limit_value_close_yi": {"type": ["number", "null"]},
+          "limit_value_max": {"type": ["number", "null"], "description": "峰封（元）"},
+          "limit_value_max_yi": {"type": ["number", "null"]},
+          "seal_strength": {"type": ["number", "null"], "description": "封单强度=封单额÷流通市值"},
+          "main_flow": {"type": ["number", "null"], "description": "主力净流入（元，mkt_equ_mf_new.MAIN_FLOW）"},
+          "main_flow_yi": {"type": ["number", "null"]},
+          "turnover_value": {"type": ["number", "null"], "description": "成交额（元）"},
+          "turnover_rate": {"type": ["number", "null"]},
+          "is_new_high_20d": {"type": ["boolean", "null"], "description": "20 日新高（30 自然日窗口，不含 D）"},
+          "is_bj": {"type": "boolean"}
+        },
+        "required": ["board", "ticker"]
+      }
+    },
+    "industry_summary": {
+      "type": "array",
+      "description": "行业聚合（入梯家数降序、同数按最高连板降序；基于展示梯队）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "industry": {"type": ["string", "null"], "description": "申万一级行业名；缺失记\"未分类\""},
+          "count": {"type": "integer"},
+          "max_board": {"type": "integer"},
+          "representative_ticker": {"type": ["string", "null"]},
+          "representative_name": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "industry_basis": {"type": ["string", "null"]},
+    "readings": {
+      "type": ["object", "null"],
+      "description": "读数辅助：可数断言由 Python 直接给出，报告只引用不数表",
+      "properties": {
+        "open_seal_count": {"type": "integer", "description": "开盘即刻封板只数（first_limit_time ≤ 09:25:59 的入梯股）"},
+        "seal_amount_bottom2": {
+          "type": "array",
+          "description": "入梯股收盘封单额最小的两只（封单脆弱观察项）",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ticker": {"type": "string"},
+              "name": {"type": ["string", "null"]},
+              "seal_amount_yi": {"type": ["number", "null"], "description": "收盘封单额（亿元）"}
+            },
+            "required": ["ticker"]
+          }
+        }
+      }
+    },
+    "data_quality": {
+      "type": ["object", "null"],
+      "properties": {
+        "limit_rows_total": {"type": "integer"},
+        "limit_rows_day": {"type": "integer"},
+        "pool_size_all": {"type": "integer"},
+        "pool_size": {"type": "integer"},
+        "st_excluded": {"type": "integer"},
+        "bj_excluded": {"type": "integer"},
+        "bombed_count": {"type": "integer"},
+        "quotes_rows": {"type": "integer"},
+        "quote_dates": {"type": "integer"},
+        "quote_window": {"type": ["string", "null"]},
+        "mf_rows": {"type": "integer"},
+        "stats_rows": {"type": "integer"},
+        "md_rows": {"type": "integer"},
+        "members_industries": {"type": "integer"},
+        "verify_mismatch": {"type": "integer"},
+        "artifact_names": {
+          "type": ["object", "null"],
+          "additionalProperties": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "gaps": {"type": "array", "items": {"type": "string"}},
+    "error": {
+      "type": ["object", "null"],
+      "properties": {
+        "code": {"type": "string"},
+        "message": {"type": "string"}
+      }
+    }
+  }
+}

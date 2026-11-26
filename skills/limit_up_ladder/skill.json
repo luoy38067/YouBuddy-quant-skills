@@ -1,0 +1,43 @@
+{
+  "name": "limit_up_ladder",
+  "version": "0.3.5",
+  "display_name": "连板天梯复盘",
+  "description": "Flow+Python 连板天梯（复盘）：窗口整表导出涨停明细/6片行情/资金流/封板情绪/证券名称，pandas 精确判定收盘封板与连板计数、20日新高与封单强度，31 申万一级行业成员快照映射，固定报告格式。",
+  "runtime": "agent_python",
+  "entry": "SKILL.md",
+  "python_entry": "compute.py",
+  "workflow": "workflow.json",
+  "allowed_tools": [
+    "app_dq_export",
+    "app_dq_index_constituents_by_name",
+    "app_dq_industry_members"
+  ],
+  "max_tool_calls": 50,
+  "max_rounds": 12,
+  "accepted_datasets": {
+    "cross_section": "market.cross_section.v1"
+  },
+  "python_hooks": [
+    {
+      "name": "compute_limit_ladder",
+      "entry": "compute.py",
+      "inputs": [],
+      "output": "limit.ladder.v1"
+    }
+  ],
+  "output_contract": {
+    "format": "markdown",
+    "template": "report.md"
+  },
+  "permissions": {
+    "fs_read": [
+      "./skill_runs/limit_up_ladder/",
+      "./.data/"
+    ],
+    "fs_write": [
+      "./skill_runs/limit_up_ladder/"
+    ],
+    "network": [],
+    "subprocess": []
+  }
+}

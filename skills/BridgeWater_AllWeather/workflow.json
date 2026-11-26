@@ -17,17 +17,17 @@
     {
       "name": "universe",
       "type": "enum",
-      "default": "CSI300",
+      "default": "CUSTOM",
       "enum_values": [
-        "CSI300"
+        "CUSTOM"
       ],
-      "description": "股票池（成分区间内嵌，固定沪深300）"
+      "description": "资产池（固定四只 ETF，行情由宿主提供）"
     },
     {
       "name": "benchmark",
       "type": "string",
       "default": "000300",
-      "description": "基准指数代码"
+      "description": "基准指数代码（沪深300）"
     }
   ],
   "constraints": [
@@ -38,24 +38,24 @@
     }
   ],
   "strategy": {
-    "id": "cs300_opt_2",
-    "name": "沪深300优选策略二（4因子等权 EQ加权月度Top10）",
-    "family": "multi_factor",
+    "id": "BridgeWater_AllWeather",
+    "name": "桥水全天候策略",
+    "family": "risk_parity",
     "version": "2.0.0",
-    "asset_class": "equity",
+    "asset_class": "fund",
     "direction": "long_only",
     "tags": [
-      "multi_factor",
-      "eq_weight",
+      "risk_parity",
+      "asset_allocation",
       "scheduled",
-      "monthly",
-      "a_share"
+      "weekly",
+      "etf"
     ]
   },
   "rebalance": {
     "mode": "scheduled",
-    "frequency": "monthly",
-    "calendar_rule": "month_first_trading_day",
+    "frequency": "weekly",
+    "calendar_rule": "weekly_first_trading_day",
     "signal_timing": "close",
     "execution_timing": "next_open"
   },
@@ -63,16 +63,19 @@
     {
       "id": "build_dataset",
       "type": "dataset",
-      "builder": "equity_backtest_bundle.v1",
-      "label": "构建回测数据集（日历/股票池/个股与基准行情）",
+      "builder": "multi_asset_backtest_bundle.v1",
+      "label": "构建回测数据集（交易日历/ETF 行情/基准行情）",
       "args": [
         {
           "start": "${input.start}",
           "end": "${input.end}",
-          "warmup_trading_days": 60,
-          "universe": "${input.universe}",
+          "warmup_trading_days": 140,
+          "universe": "CUSTOM",
+          "custom_tickers": "515220,511260,518880,512890",
           "benchmark": "${input.benchmark}",
-          "adjustment": "forward"
+          "adjustment": "forward",
+          "asset_class": "etf",
+          "execution_price_type": "next_open"
         }
       ]
     },
@@ -80,7 +83,7 @@
       "id": "run_backtest",
       "type": "python_hook",
       "hook": "run_backtest",
-      "label": "运行沪深300优选策略二回测（4因子加权，内嵌数据撮合）"
+      "label": "运行桥水全天候策略回测"
     },
     {
       "id": "validate_outputs",

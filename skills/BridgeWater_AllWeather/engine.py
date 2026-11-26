@@ -114,6 +114,14 @@ class Inputs:
             return None
         return values
 
+    def closes_before(self, ticker: str, date: str) -> List[Tuple[str, float]]:
+        """trade_date < date 的 (日期, 收盘价) 升序序列（严格早于 date）。"""
+        series = self.closes.get(ticker)
+        if not series:
+            return []
+        dates = sorted(d for d in series if d < date)
+        return [(d, series[d]) for d in dates]
+
     def last_close_at_or_before(self, ticker: str, date: str) -> Optional[float]:
         series = self.closes.get(ticker)
         if not series:

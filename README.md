@@ -7,13 +7,13 @@
 [![License](https://img.shields.io/badge/License-MIT-3ECF8E?style=flat-square)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/luoy38067/YouBuddy-quant-skills?style=flat-square&color=0F9D8A&label=Release)](https://github.com/luoy38067/YouBuddy-quant-skills/releases/latest)
 [![Platform](https://img.shields.io/badge/Windows-10%2F11%20x64-0078D6?style=flat-square&logo=windows)](https://github.com/luoy38067/YouBuddy-quant-skills/releases/latest)
-[![Skills](https://img.shields.io/badge/%E7%AD%96%E7%95%A5%20Skill-3%20%E4%B8%AA-F6C344?style=flat-square)](#策略列表)
+[![Skills](https://img.shields.io/badge/%E9%87%8F%E5%8C%96%20Skill-3%20%E4%B8%AA-F6C344?style=flat-square)](#skill-列表)
 
 </div>
 
 ---
 
-本仓库是 YouBuddy 平台的量化策略 Skill 合集。每个 Skill 是一个开箱即用的策略回测包：安装到 YouBuddy 后，软件会自动准备行情数据，一键即可运行回测，输出净值曲线、逐笔成交、调仓记录与策略解读报告。
+本仓库是 YouBuddy 平台的量化 Skill 合集，包含策略回测与市场复盘两类：回测类 Skill 安装到 YouBuddy 后，软件会自动准备行情数据，一键即可运行回测，输出净值曲线、逐笔成交、调仓记录与策略解读报告；复盘类 Skill 一键生成指定交易日的涨停复盘报告。
 
 ## 🚀 AI 一键安装
 
@@ -66,7 +66,7 @@ YouBuddy 已安装的策略统一存放在本机以下目录：
 C:\Users\<用户名>\AppData\Roaming\com.youbuddy.app\skills\
 ```
 
-把仓库 `skills/` 下的各策略文件夹**整个复制**到上述目录（例如 `cs300_opt_1` 文件夹），重新打开 YouBuddy，在软件的 Skill 列表中确认已识别，即可运行回测。
+把仓库 `skills/` 下的各策略文件夹**整个复制**到上述目录（例如 `baima_offense_defense_opt` 文件夹），重新打开 YouBuddy，在软件的 Skill 列表中确认已识别，即可运行回测。
 
 ## 激活码
 
@@ -78,15 +78,15 @@ YouBuddy 安装并首次打开时，需要输入激活码（邀请码）完成�
 
 激活码是使用 YouBuddy 及本仓库策略 Skill 的必要凭证，请妥善保管，运行回测前请先完成激活。
 
-## 策略列表
+## Skill 列表
 
-| Skill 目录 | 策略名称 | 策略简介 | 调仓频率 | 默认回测区间 |
+| Skill 目录 | 名称 | 简介 | 调仓/复盘频率 | 默认回测区间 |
 |---|---|---|---|---|
 | `skills/baima_offense_defense_opt` | 沪深300白马攻防策略 | 沪深300成分股内按市场状态（冷/温/热三档）结合估值与盈利质量条件筛选，经价格动量过滤与流动性排序，取前 5 只等权持有 | 月度 | 2024-01-02 ~ 2026-11-10 |
-| `skills/cs300_opt_1` | 沪深300优选策略一 | 沪深300成分股内按 4 因子逆波动率加权综合评分，选 Top10 等权持有 | 月度 | 2024-01-02 ~ 2026-11-10 |
-| `skills/cs300_opt_2` | 沪深300优选策略二 | 沪深300成分股内按 4 因子等权加权综合评分，选 Top10 等权持有 | 月度 | 2024-01-02 ~ 2026-11-10 |
+| `skills/BridgeWater_AllWeather` | 桥水全天候策略 | 煤炭、城投债、黄金、红利低波四只 ETF 固定池内，按各资产近 120 日收益尾部风险倒数分配权重（风险平价思想，满仓无杠杆，单资产权重上限 40%） | 每周首个交易日 | 2024-01-02 ~ 2026-11-10 |
+| `skills/limit_up_ladder` | 连板天梯复盘 | 涨停复盘工具：指定复盘日，输出涨停池、连板梯队、行业聚合与全市场封板情绪复盘报告（自动取近 30 自然日窗口数据） | 逐日（随需复盘） | — |
 
-> 策略调仓均在每月首个交易日执行，信号收盘产生、次日执行；各策略的回测区间、基准与输出产物详见各 Skill 目录内的 `SKILL.md` 与 `report.md`。
+> 回测策略信号收盘产生、次日执行；各策略的调仓频率、回测区间、基准与输出产物详见各 Skill 目录内的 `SKILL.md` 与 `report.md`。
 
 ## 目录结构
 
@@ -104,19 +104,20 @@ YouBuddy-quant-skills/
     │   ├── report.md                  #   报告模板
     │   ├── data/                      #   策略内嵌数据（调仓目标表等）
     │   └── schemas/                   #   输出产物契约
-    ├── cs300_opt_1/                   # 沪深300优选策略一
-    └── cs300_opt_2/                   # 沪深300优选策略二
+    ├── BridgeWater_AllWeather/        # 桥水全天候策略
+    └── limit_up_ladder/               # 连板天梯复盘工具
 ```
 
 ## 📰 最新动态
 
 | 日期 | 版本 | 重点 |
 |---|---|---|
+| 2026-11-26 | v1.1.0 | 上架桥水全天候策略（ETF 风险平价配置）与连板天梯复盘工具（涨停复盘）；下架沪深300优选策略一/二（策略精选轮换） |
 | 2026-11-20 | [v1.0.0](https://github.com/luoy38067/YouBuddy-quant-skills/releases/tag/v1.0.0) | 仓库开张：首批上架 3 个沪深300 系策略 Skill（白马攻防 / 优选策略一 / 优选策略二），YouBuddy 安装包同步发布至 Releases |
 
 ## 反馈与更新
 
-欢迎通过 [Issues](https://github.com/luoy38067/YouBuddy-quant-skills/issues) 反馈使用问题与策略需求；更多类型的策略（ETF 轮动、全天候配置、红利杠铃等）将持续上架，欢迎 Star 关注。
+欢迎通过 [Issues](https://github.com/luoy38067/YouBuddy-quant-skills/issues) 反馈使用问题与策略需求；更多类型的策略与工具（ETF 轮动、红利杠铃、市场情绪复盘等）将持续上架，欢迎 Star 关注。
 
 ## License
 

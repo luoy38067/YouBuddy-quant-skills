@@ -16,7 +16,7 @@ params:
   benchmark: {type: string, default: "000300"}
 ---
 
-# 沪深300白马攻防策略（市场状态适应选股 · 月度Top5等权）
+# 沪深300白马攻防策略
 
 本 skill 复刻原始策略《baima_offense_defense_opt_沪深300优选_baima》：
 在沪深300成分股内按市场状态（冷/温/热三档）结合估值与盈利质量条件

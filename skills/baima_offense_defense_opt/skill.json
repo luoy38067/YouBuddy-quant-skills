@@ -1,7 +1,7 @@
 {
   "name": "baima_offense_defense_opt",
   "version": "2.0.0",
-  "display_name": "沪深300白马攻防策略回测（市场状态适应 · 月度Top5等权）",
+  "display_name": "沪深300白马攻防策略回测",
   "description": "声明式策略回测：沪深300成分股内按市场状态（冷/温/热）结合估值与盈利质量条件筛选，经动量过滤与流动性排序取前5等权持有，月度调仓，信号收盘产生，次日开盘执行（实际撮合为执行日收盘价）。",
   "runtime": "agent_python",
   "entry": "SKILL.md",
