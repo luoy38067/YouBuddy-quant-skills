@@ -50,6 +50,15 @@ YouBuddy 的完整运行环境由三部分组成，建议按顺序安装。下�
 | `Miniconda3-py312_26.9.4-1-Windows-x86_64.exe` | `7FB37E3049EDCF3524AE4735B54D04917353F35B3190CB0C9CCB789729934BD4` |
 | `vc_redist.x64.exe` | `CC0FF0EB1DC3F5188AE6300FAEF32BF5BEEBA4BDD6E8E445A9184072096B713B` |
 
+> **本机已装过 VC 运行库 / Python 的，请先核对版本**——版本过旧一样会导致 YouBuddy 无法正常运行，达标才可跳过对应步骤：
+>
+> | 组件 | 最低要求 | 核对方法（PowerShell） | 不满足时 |
+> |---|---|---|---|
+> | VC++ 2015-2022 Redistributable (x64) | ≥ **14.50.35719.0** | `(Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" -ErrorAction SilentlyContinue).Version`，输出形如 `v14.50.35719.00` | 重新运行上表第 1 步的 `vc_redist.x64.exe`，新版自动覆盖升级旧版，无需卸载 |
+> | Python | ≥ **3.12** | `python --version` | 安装上表第 2 步的 Miniconda（自带 Python 3.12 独立环境，不影响已有 Python） |
+>
+> 核对无输出（未安装）或版本低于最低要求的，请完成对应安装；也可直接重跑安装包覆盖升级，两不冲突。
+
 ## 快速开始
 
 | 步骤 | 操作 |
